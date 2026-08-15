@@ -14,6 +14,8 @@ Embed the [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) ag
   **Auto-detect & auto-start**: probes the server URL when the panel opens, and spawns the configured command (default `dsh web`) when it is missing, polling until it is ready.
 - **状态栏**：`DSH Online / Offline / Starting` 一目了然，点击直接打开面板。
   **Status bar**: live `DSH Online / Offline / Starting` indicator; click to open the panel.
+- **当前文件感知（Claude Code 式）**：你在 VS Code 中正在查看/编辑的文件会实时推送给 DSH；Agent 会话通过 `vscode_active_file` 工具随时读取它（路径、语言、选区、未保存标记、内容），系统提示每轮注入 `[VS Code] Active file: ...`。
+  **Active-file awareness (Claude Code style)**: the file you are viewing/editing is pushed to the harness in real time; agent sessions read it anytime via the `vscode_active_file` tool (path, language, selection, dirty flag, content), with a `[VS Code] Active file: ...` line injected into the system prompt every turn.
 - **浏览器备用**：一键在系统浏览器中打开同一界面。
   **Browser fallback**: open the same UI in your system browser with one command.
 - **可配置**：URL、启动命令、超时、开机自动打开均可设置，支持远程部署（需配合 `--trusted-host`）。
@@ -46,6 +48,7 @@ Embed the [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) ag
 | `DeepSeek Harness: Start Server` | Start the server if it is not running / 启动服务器 |
 | `DeepSeek Harness: Stop Server` | Stop the spawned server process / 停止服务器 |
 | `DeepSeek Harness: Reload Panel` | Reload the embedded page / 重新加载面板 |
+| `DeepSeek Harness: Report Active File` | Push the current editor to the harness immediately / 立即上报当前文件 |
 
 ## Settings / 设置
 
@@ -57,6 +60,26 @@ Embed the [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) ag
 | `dshHarness.startTimeoutSec` | `120` | 启动后等待就绪的秒数。 |
 | `dshHarness.openOnStartup` | `false` | VS Code 启动时自动打开面板。 |
 | `dshHarness.probeTimeoutMs` | `2500` | 单次健康探测的超时（毫秒）。 |
+| `dshHarness.trackActiveFile` | `true` | 是否把当前活动文件推送给 DSH（需要 harness 侧安装 dsh-vscode-bridge 插件）。 |
+
+## Active-File Awareness / 当前文件感知
+
+让 Agent 像 Claude Code 一样知道你正在编辑哪个文件，需要**两侧**配合：
+
+1. 本扩展持续跟踪活动编辑器（切换文件、编辑内容都会触发，350ms 防抖），把快照推送到 DSH 的 `/vscode/active-file` 端点。
+2. DSH 侧安装仓库内 [`dsh-plugin/`](dsh-plugin/)（`dsh-vscode-bridge`）插件：
+   ```bash
+   cd dsh-plugin
+   DSH_CHECKOUT=<deepseek-harness 检出路径> bash scripts/build.sh
+   npm pack                       # 得到 dsh-vscode-bridge-0.1.0.tgz
+   # 在 harness 中安装该 tgz（bundle 装配），或使用 dsh-super-injector 热装配：
+   # dev_install_package {"dir": "<dsh-plugin 绝对路径>"}
+   ```
+   插件注册 `vscode_active_file` 工具 + `[VS Code] Active file: ...` 系统提示节（每轮求值）。新建会话即可生效。
+
+验证：在 VS Code 打开任意文件后，`curl http://127.0.0.1:3080/vscode/active-file` 应返回该文件的快照 JSON。
+
+The two halves work together: this extension tracks the active editor and pushes snapshots to `/vscode/active-file`; the harness-side plugin in [`dsh-plugin/`](dsh-plugin/) (`dsh-vscode-bridge`) exposes them as the `vscode_active_file` tool plus a per-turn `[VS Code] Active file: ...` prompt section. Install the plugin (build + `npm pack`, then bundle/install it in your harness), open a file in VS Code, and `curl http://127.0.0.1:3080/vscode/active-file` should return its snapshot.
 
 ## How It Works / 工作原理
 

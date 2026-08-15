@@ -2,7 +2,7 @@
   "name": "deepseek-harness-vscode",
   "displayName": "DeepSeek Harness",
   "description": "Embed the DeepSeek Harness agent web UI (dsh web) inside VS Code — drive DeepSeek agents without leaving your editor.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "deepseek-harness",
   "license": "MIT",
   "engines": {
@@ -55,6 +55,11 @@
         "command": "dsh.refresh",
         "title": "DeepSeek Harness: Reload Panel",
         "category": "DeepSeek Harness"
+      },
+      {
+        "command": "dsh.reportActiveFile",
+        "title": "DeepSeek Harness: Report Active File",
+        "category": "DeepSeek Harness"
       }
     ],
     "configuration": {
@@ -84,6 +89,11 @@
           "type": "boolean",
           "default": false,
           "description": "Open the DeepSeek Harness panel automatically when VS Code starts."
+        },
+        "dshHarness.trackActiveFile": {
+          "type": "boolean",
+          "default": true,
+          "description": "Push the file you are currently viewing/editing to the DeepSeek Harness bridge (requires the dsh-vscode-bridge plugin on the harness side). Agent sessions then see your active file through the vscode_active_file tool."
         },
         "dshHarness.probeTimeoutMs": {
           "type": "number",
