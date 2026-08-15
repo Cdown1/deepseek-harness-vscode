@@ -1,0 +1,109 @@
+{
+  "name": "deepseek-harness-vscode",
+  "displayName": "DeepSeek Harness",
+  "description": "Embed the DeepSeek Harness agent web UI (dsh web) inside VS Code — drive DeepSeek agents without leaving your editor.",
+  "version": "0.1.0",
+  "publisher": "deepseek-harness",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other",
+    "AI"
+  ],
+  "keywords": [
+    "deepseek",
+    "harness",
+    "agent",
+    "ai",
+    "dsh"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/USERNAME/deepseek-harness-vscode.git"
+  },
+  "icon": "media/icon.png",
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "dsh.open",
+        "title": "DeepSeek Harness: Open Panel",
+        "category": "DeepSeek Harness",
+        "icon": "$(globe)"
+      },
+      {
+        "command": "dsh.openInBrowser",
+        "title": "DeepSeek Harness: Open in Browser",
+        "category": "DeepSeek Harness"
+      },
+      {
+        "command": "dsh.startServer",
+        "title": "DeepSeek Harness: Start Server",
+        "category": "DeepSeek Harness"
+      },
+      {
+        "command": "dsh.stopServer",
+        "title": "DeepSeek Harness: Stop Server",
+        "category": "DeepSeek Harness"
+      },
+      {
+        "command": "dsh.refresh",
+        "title": "DeepSeek Harness: Reload Panel",
+        "category": "DeepSeek Harness"
+      }
+    ],
+    "configuration": {
+      "title": "DeepSeek Harness",
+      "properties": {
+        "dshHarness.url": {
+          "type": "string",
+          "default": "http://127.0.0.1:3080",
+          "description": "Base URL of the DeepSeek Harness web server. The /api trust fence only accepts loopback by default; for a remote host use `dsh web --trusted-host <host>` and set this to its URL."
+        },
+        "dshHarness.autoStart": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically start the server (`dshHarness.startCommand`) when the panel is opened and the URL is not reachable."
+        },
+        "dshHarness.startCommand": {
+          "type": "string",
+          "default": "dsh web",
+          "description": "Shell command used to start the DeepSeek Harness web server when it is not running. Example: `dsh web` or `dsh --profile web --port 8080`."
+        },
+        "dshHarness.startTimeoutSec": {
+          "type": "number",
+          "default": 120,
+          "description": "Seconds to wait for the server to come online after starting it."
+        },
+        "dshHarness.openOnStartup": {
+          "type": "boolean",
+          "default": false,
+          "description": "Open the DeepSeek Harness panel automatically when VS Code starts."
+        },
+        "dshHarness.probeTimeoutMs": {
+          "type": "number",
+          "default": 2500,
+          "description": "Milliseconds to wait for a single health probe of the server URL."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "npm run compile && vsce package --no-dependencies",
+    "smoke": "npm run compile && node scripts/smoke.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/vscode": "^1.80.0",
+    "@vscode/vsce": "^3.2.0",
+    "typescript": "^5.7.0"
+  }
+}
