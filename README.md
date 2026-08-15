@@ -14,8 +14,8 @@ Embed the [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) ag
   **Auto-detect & auto-start**: probes the server URL when the panel opens, and spawns the configured command (default `dsh web`) when it is missing, polling until it is ready.
 - **状态栏**：`DSH Online / Offline / Starting` 一目了然，点击直接打开面板。
   **Status bar**: live `DSH Online / Offline / Starting` indicator; click to open the panel.
-- **当前文件感知（Claude Code 式）**：你在 VS Code 中正在查看/编辑的文件会实时推送给 DSH；Agent 会话通过 `vscode_active_file` 工具随时读取它（路径、语言、选区、未保存标记、内容），系统提示每轮注入 `[VS Code] Active file: ...`。
-  **Active-file awareness (Claude Code style)**: the file you are viewing/editing is pushed to the harness in real time; agent sessions read it anytime via the `vscode_active_file` tool (path, language, selection, dirty flag, content), with a `[VS Code] Active file: ...` line injected into the system prompt every turn.
+- **当前文件感知（Claude Code 式）**：你在 VS Code 中正在查看/编辑的文件会实时推送给 DSH；Agent 会话通过 `vscode_active_file` 工具随时读取它（路径、语言、选区、未保存标记、内容），系统提示每轮注入 `[VS Code] Active file: ...`；**对话输入框左下角实时显示当前文件徽章**（v0.2.0，需 bridge 插件 ≥0.2.0 并刷新页面）。
+  **Active-file awareness (Claude Code style)**: the file you are viewing/editing is pushed to the harness in real time; agent sessions read it anytime via the `vscode_active_file` tool (path, language, selection, dirty flag, content), with a `[VS Code] Active file: ...` line injected into the system prompt every turn — and a **live current-file badge at the bottom-left of the chat input** (v0.2.0, needs bridge plugin ≥0.2.0 and one page refresh).
 - **浏览器备用**：一键在系统浏览器中打开同一界面。
   **Browser fallback**: open the same UI in your system browser with one command.
 - **可配置**：URL、启动命令、超时、开机自动打开均可设置，支持远程部署（需配合 `--trusted-host`）。

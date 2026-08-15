@@ -53,6 +53,25 @@ link_pkg @deepseek-ai/dsh-llm packages/llm/llm
 link_pkg @deepseek-ai/dsh-system-prompt packages/core/system-prompt
 # @types/node（编译类型；checkout 自带）
 link_pkg @types/node node_modules/@types/node
+# client half: slots 注册类型 + 输入槽声明 + react 类型
+link_pkg @deepseek-ai/dsh-client-ui-slots packages/client/ui-slots
+link_pkg @deepseek-ai/dsh-client-ui-conversation packages/client/ui-conversation
+link_pkg @deepseek-ai/dsh-client-runtime packages/client/runtime
+
+REACT_TYPES=$(find "$CHECKOUT/node_modules/.pnpm" -maxdepth 1 -type d -iname '@types+react@*' 2>/dev/null | head -1)
+if [ -n "$REACT_TYPES" ]; then
+  node -e "
+    const fs = require('fs');
+    const path = require('path');
+    const dest = path.resolve('node_modules/@types/react');
+    fs.rmSync(dest, { recursive: true, force: true });
+    fs.mkdirSync(path.dirname(dest), { recursive: true });
+    fs.symlinkSync(path.resolve(process.argv[1]), dest, process.platform === 'win32' ? 'junction' : 'dir');
+  " "$REACT_TYPES/node_modules/@types/react"
+else
+  echo "build: @types/react not found in checkout pnpm store" >&2
+  exit 1
+fi
 
 STD_SCHEMA=$(find "$CHECKOUT/node_modules/.pnpm" -maxdepth 1 -type d -iname '@standard-schema+spec@*' 2>/dev/null | head -1)
 if [ -n "$STD_SCHEMA" ]; then
@@ -67,4 +86,5 @@ fi
 
 echo "=== Compiling src → lib ==="
 "$TSC" -p tsconfig.json
+"$TSC" -p tsconfig.client.json
 echo "=== Build complete ==="

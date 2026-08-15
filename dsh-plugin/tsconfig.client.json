@@ -3,7 +3,8 @@
     "target": "ES2023",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "lib": ["ES2023"],
+    "lib": ["ES2023", "DOM"],
+    "jsx": "react-jsx",
     "strict": true,
     "types": ["node"],
     "declaration": true,
@@ -13,7 +14,9 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "allowImportingTsExtensions": true,
+    "emitDeclarationOnly": true
   },
-  "include": ["src/index.ts", "src/context-types.ts"]
+  "include": ["src/client"]
 }
